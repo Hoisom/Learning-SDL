@@ -1,4 +1,6 @@
 #include "Game.hpp"
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_render.h>
 
 Game::Game()
 {}
@@ -21,6 +23,8 @@ void Game::init(const char* title, int x_pos, int y_pos, int width, int height, 
         return;
     }
 
+    IMG_Init(IMG_INIT_PNG);
+
     window = SDL_CreateWindow(title, x_pos, y_pos, width, height, flags);
     if (window == NULL)
     {
@@ -36,6 +40,9 @@ void Game::init(const char* title, int x_pos, int y_pos, int width, int height, 
         is_running = false;
         return;
     }
+    image = IMG_Load("image.png");
+    texture = SDL_CreateTextureFromSurface(renderer, image);
+
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
     is_running = true;
@@ -57,13 +64,23 @@ void Game::handle_events()
     }
 }
 
-void Game::update()
-{}
+void Game::update(int screen_width, int screen_height)
+{
+    // Set colour to white
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    // Fill screen with white
+    SDL_RenderClear(renderer);
+
+    SDL_Rect rect = {screen_width/4, screen_height/4, screen_width/2, screen_height/2};
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    SDL_RenderFillRect(renderer, &rect);
+
+    // Render image
+    SDL_RenderCopy(renderer, texture, NULL, &rect);
+}
 
 void Game::render()
 {
-    SDL_RenderClear(renderer);
-    // Add stuff to render
     SDL_RenderPresent(renderer);
 }
 
